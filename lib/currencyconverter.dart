@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class CurrencyConverter extends StatefulWidget {
   const CurrencyConverter({super.key});
@@ -12,11 +14,27 @@ class _CurrencyConverterState extends State<CurrencyConverter> {
   final TextEditingController textEditingController =  TextEditingController();
     double result = 0;
 
-    void convert(){
-      setState(() {
-        result = double.parse(textEditingController.text);
-      });
+  Future<double> fetchRate(String toCurrency) async {
+    final response = await http.get(
+      Uri.parse('https://api.exchangerate-api.com/v4/latest/USD'),
+    );
 
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['rates'][toCurrency];//explain this
+    } else {
+      throw Exception('Failed to fetch rates');
+    }
+  }
+
+
+  void convert() async {
+        final input = double.parse(textEditingController.text);
+        final rate = await fetchRate("NGN");
+
+      setState(() {
+        result = input * rate;
+      });
     }
 
   @override
