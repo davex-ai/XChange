@@ -7,12 +7,30 @@ class CurrencyConverter extends StatefulWidget {
 
   @override
   State<CurrencyConverter> createState() => _CurrencyConverterState();
-
 }
 
 class _CurrencyConverterState extends State<CurrencyConverter> {
-  final TextEditingController textEditingController =  TextEditingController();
-    double result = 0;
+  final TextEditingController textEditingController = TextEditingController();
+  double result = 0;
+  List<String> currencyList = [
+    "USD", "AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD", "AWG",
+    "AZN", "BAM", "BBD", "BDT", "BGN", "BHD", "BIF", "BMD", "BND", "BOB",
+    "BRL", "BSD", "BTN", "BWP", "BYN", "BZD", "CAD", "CDF", "CHF", "CLF",
+    "CLP", "CNH", "CNY", "COP", "CRC", "CUP", "CVE", "CZK", "DJF", "DKK",
+    "DOP", "DZD", "EGP", "ERN", "ETB", "EUR", "FJD", "FKP", "FOK", "GBP",
+    "GEL", "GGP", "GHS", "GIP", "GMD", "GNF", "GTQ", "GYD", "HKD", "HNL",
+    "HRK", "HTG", "HUF", "IDR", "ILS", "IMP", "INR", "IQD", "IRR", "ISK",
+    "JEP", "JMD", "JOD", "JPY", "KES", "KGS", "KHR", "KID", "KMF", "KRW",
+    "KWD", "KYD", "KZT", "LAK", "LBP", "LKR", "LRD", "LSL", "LYD", "MAD",
+    "MDL", "MGA", "MKD", "MMK", "MNT", "MOP", "MRU", "MUR", "MVR", "MWK",
+    "MXN", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR",
+    "PAB", "PEN", "PGK", "PHP", "PKR", "PLN", "PYG", "QAR", "RON", "RSD",
+    "RUB", "RWF", "SAR", "SBD", "SCR", "SDG", "SEK", "SGD", "SHP", "SLE",
+    "SLL", "SOS", "SRD", "SSP", "STN", "SYP", "SZL", "THB", "TJS", "TMT",
+    "TND", "TOP", "TRY", "TTD", "TVD", "TWD", "TZS", "UAH", "UGX", "UYU",
+    "UZS", "VES", "VND", "VUV", "WST", "XAF", "XCD", "XCG", "XDR", "XOF",
+    "XPF", "YER", "ZAR", "ZMW", "ZWG", "ZWL"
+  ];
 
   Future<double> fetchRate(String toCurrency) async {
     final response = await http.get(
@@ -21,25 +39,24 @@ class _CurrencyConverterState extends State<CurrencyConverter> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return data['rates'][toCurrency];//explain this
+      return data['rates'][toCurrency];
     } else {
       throw Exception('Failed to fetch rates');
     }
   }
 
-
   void convert() async {
-        final input = double.parse(textEditingController.text);
-        final rate = await fetchRate("NGN");
+    final input = double.parse(textEditingController.text);
+    final rate = await fetchRate("NGN");
 
-      setState(() {
-        result = input * rate;
-      });
-    }
+    setState(() {
+      result = input * rate;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-  final border = OutlineInputBorder(
+    final border = OutlineInputBorder(
       borderSide: const BorderSide(width: 2.0, style: BorderStyle.solid),
       borderRadius: BorderRadius.circular(5),
     );
@@ -47,15 +64,17 @@ class _CurrencyConverterState extends State<CurrencyConverter> {
       appBar: AppBar(
         backgroundColor: Colors.blueGrey,
         elevation: 0,
-        title: Text("XChange", style: TextStyle(color: Colors.white),),
+        title: Text("XChange", style: TextStyle(color: Colors.white)),
       ),
       backgroundColor: Colors.blueGrey,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-             Text(
-              result != 0 ? result.toStringAsFixed(2): result.toStringAsFixed(0),
+            Text(
+              result != 0
+                  ? result.toStringAsFixed(2)
+                  : result.toStringAsFixed(0),
               style: const TextStyle(
                 fontSize: 55,
                 fontWeight: FontWeight.bold,
@@ -79,6 +98,18 @@ class _CurrencyConverterState extends State<CurrencyConverter> {
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
               ),
             ),
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsetsGeometry.all(10),
+                  child: DropdownButton(items: currencyList.map(String value), onChanged: onChanged),
+                ),
+                Padding(
+                  padding: const EdgeInsetsGeometry.all(10),
+                  child: DropdownButton(items: items, onChanged: onChanged),
+                ),
+              ],
+            ),
             Padding(
               padding: const EdgeInsetsGeometry.all(10),
               child: TextButton(
@@ -100,5 +131,3 @@ class _CurrencyConverterState extends State<CurrencyConverter> {
     );
   }
 }
-
-
