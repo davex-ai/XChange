@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
 
 class CurrencyConverter extends StatelessWidget {
-  const CurrencyConverter({super.key});
+  CurrencyConverter({super.key});
+  final TextEditingController _textEditingController =  TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    final border = OutlineInputBorder(
+    int result = 0;
+
+  final border = OutlineInputBorder(
       borderSide: const BorderSide(width: 2.0, style: BorderStyle.solid),
       borderRadius: BorderRadius.circular(5),
     );
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blueGrey,
+        elevation: 0,
+        title: Text("XChange", style: TextStyle(color: Colors.white),),
+      ),
       backgroundColor: Colors.blueGrey,
       body: Center(
         child: Column(
@@ -28,6 +36,7 @@ class CurrencyConverter extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(10),
               child: TextField(
+                controller: _textEditingController,
                 style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
                   hintText: 'Enter amount in USD',
@@ -44,17 +53,14 @@ class CurrencyConverter extends StatelessWidget {
             Padding(
               padding: const EdgeInsetsGeometry.all(10),
               child: TextButton(
-                onPressed: () {},
-                style: ButtonStyle(
-                  backgroundColor: MaterialStatePropertyAll(Colors.black),
-                  foregroundColor: MaterialStatePropertyAll(Colors.white),
-                  minimumSize: MaterialStatePropertyAll(
-                    Size(double.infinity, 50),
-                  ),
-                  shape: MaterialStatePropertyAll(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
+                onPressed: () {
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
                   ),
                 ),
                 child: const Text('Convert'),
