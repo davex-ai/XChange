@@ -9,11 +9,18 @@ class CurrencyConverter extends StatefulWidget {
 }
 
 class _CurrencyConverterState extends State<CurrencyConverter> {
-  @override
-  Widget build(BuildContext context) {
   final TextEditingController textEditingController =  TextEditingController();
     double result = 0;
 
+    void convert(){
+      setState(() {
+        result = double.parse(textEditingController.text);
+      });
+
+    }
+
+  @override
+  Widget build(BuildContext context) {
   final border = OutlineInputBorder(
       borderSide: const BorderSide(width: 2.0, style: BorderStyle.solid),
       borderRadius: BorderRadius.circular(5),
@@ -30,7 +37,7 @@ class _CurrencyConverterState extends State<CurrencyConverter> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
              Text(
-              result.toString(),
+              result != 0 ? result.toStringAsFixed(2): result.toStringAsFixed(0),
               style: const TextStyle(
                 fontSize: 55,
                 fontWeight: FontWeight.bold,
@@ -57,12 +64,7 @@ class _CurrencyConverterState extends State<CurrencyConverter> {
             Padding(
               padding: const EdgeInsetsGeometry.all(10),
               child: TextButton(
-                onPressed: () {
-                  setState(() {
-                  result = double.parse(textEditingController.text);
-                  });
-                  print(result);
-                },
+                onPressed: convert,
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
