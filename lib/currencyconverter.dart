@@ -145,7 +145,17 @@ class _CurrencyConverterState extends State<CurrencyConverter> {
                 decoration: InputDecoration(
                   hintText: 'Enter amount in $fromCurrency',
                   hintStyle: const TextStyle(color: Colors.black54),
-                  prefixIcon: Text(mapfunc(fromCurrency)),
+                  prefixIcon: Center(
+                    widthFactor: 0.8,
+                    child: Text(
+                      mapfunc(fromCurrency),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+
                   filled: true,
                   fillColor: Colors.white,
                   focusedBorder: border,
