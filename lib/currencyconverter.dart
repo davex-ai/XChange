@@ -15,6 +15,7 @@ class _CurrencyConverterState extends State<CurrencyConverter> {
   String fromCurrency = "USD";
   String toCurrency = "NGN";
 
+
   List<String> currencyList = [
     "USD", "AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD", "AWG",
     "AZN", "BAM", "BBD", "BDT", "BGN", "BHD", "BIF", "BMD", "BND", "BOB",
@@ -35,6 +36,43 @@ class _CurrencyConverterState extends State<CurrencyConverter> {
     "XPF", "YER", "ZAR", "ZMW", "ZWG", "ZWL"
   ];
 
+  Map<String, String> currencyWithSymbols = {
+    "USD": r"$", "AED": "د.إ", "AFN": "؋", "ALL": "L", "AMD": "֏", "ANG": "ƒ",
+    "AOA": "Kz", "ARS": r"$", "AUD": r"$", "AWG": "ƒ", "AZN": "₼", "BAM": "KM",
+    "BBD": r"$", "BDT": "৳", "BGN": "лв", "BHD": ".د.ب", "BIF": "FBu", "BMD": r"$",
+    "BND": r"$", "BOB": "Bs.", "BRL": r"R$", "BSD": r"$", "BTN": "Nu.", "BWP": "P",
+    "BYN": "Br", "BZD": r"BZ$", "CAD": r"$", "CDF": "FC", "CHF": "CHF", "CLF": "UF",
+    "CLP": r"$", "CNH": "元", "CNY": "¥", "COP": r"$", "CRC": "₡", "CUP": r"$",
+    "CVE": "Esc", "CZK": "Kč", "DJF": "Fdj", "DKK": "kr", "DOP": r"RD$", "DZD": "د.ج",
+    "EGP": "E£", "ERN": "Nfk", "ETB": "Br", "EUR": "€", "FJD": r"$", "FKP": "£",
+    "FOK": r"$", "GBP": "£", "GEL": "₾", "GGP": "£", "GHS": "GH₵", "GIP": "£",
+    "GMD": "D", "GNF": "FG", "GTQ": "Q", "GYD": r"$", "HKD": r"$", "HNL": "L",
+    "HRK": "kn", "HTG": "G", "HUF": "Ft", "IDR": "Rp", "ILS": "₪", "IMP": "£",
+    "INR": "₹", "IQD": "ع.د", "IRR": "﷼", "ISK": "kr", "JEP": "£", "JMD": r"J$",
+    "JOD": "د.ا", "JPY": "¥", "KES": "KSh", "KGS": "с", "KHR": "៛", "KID": r"$",
+    "KMF": "CF", "KRW": "₩", "KWD": "د.ك", "KYD": r"$", "KZT": "₸", "LAK": "₭",
+    "LBP": "ل.ل", "LKR": "₨", "LRD": r"$", "LSL": "L", "LYD": "ل.د", "MAD": "د.م.",
+    "MDL": "L", "MGA": "Ar", "MKD": "ден", "MMK": "K", "MNT": "₮", "MOP": "P",
+    "MRU": "UM", "MUR": "₨", "MVR": "Rf", "MWK": "MK", "MXN": r"$", "MYR": "RM",
+    "MZN": "MT", "NAD": r"$", "NGN": "₦", "NIO": r"C$", "NOK": "kr", "NPR": "₨",
+    "NZD": r"$", "OMR": "ر.ع.", "PAB": "B/.", "PEN": "S/.", "PGK": "K", "PHP": "₱",
+    "PKR": "₨", "PLN": "zł", "PYG": "₲", "QAR": "ر.ق", "RON": "lei", "RSD": "дин.",
+    "RUB": "₽", "RWF": "FRw", "SAR": "ر.س", "SBD": r"$", "SCR": "₨", "SDG": "ج.س.",
+    "SEK": "kr", "SGD": r"$", "SHP": "£", "SLE": "Le", "SLL": "Le", "SOS": "S",
+    "SRD": r"$", "SSP": "£", "STN": "Db", "SYP": "£", "SZL": "L", "THB": "฿",
+    "TJS": "SM", "TMT": "T", "TND": "د.ت", "TOP": r"T$", "TRY": "₺", "TTD": r"TT$",
+    "TVD": r"$", "TWD": r"NT$", "TZS": "TSh", "UAH": "₴", "UGX": "USh", "UYU": r"$",
+    "UZS": "лв", "VES": "Bs.S", "VND": "₫", "VUV": "VT", "WST": "T", "XAF": "FCFA",
+    "XCD": r"$", "XCG": "C", "XDR": "SDR", "XOF": "CFA", "XPF": "₣", "YER": "﷼",
+    "ZAR": "R", "ZMW": "ZK", "ZWG": "ZiG", "ZWL": "ZiG"
+  };
+
+
+
+  String mapfunc(String code) {
+    return currencyWithSymbols[code] ?? "\$";
+  }
+
 
   Future<double> fetchRate(String toCurrency) async {
     final response = await http.get(
@@ -43,15 +81,21 @@ class _CurrencyConverterState extends State<CurrencyConverter> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return data['rates'][toCurrency];
+      if (data['rates'] == null || data['rates'][toCurrency] == null) {
+        throw Exception('Currency not supported');
+      }
+
+      return (data['rates'][toCurrency] as num).toDouble();
     } else {
       throw Exception('Failed to fetch rates');
     }
   }
 
   void convert() async {
-    final input = double.parse(textEditingController.text);
+    final input = double.parse(textEditingController.text.trim());
     final rate = await fetchRate(toCurrency);
+
+    if (input.isNaN) return;
 
     setState(() {
       result = input * rate;
@@ -59,7 +103,15 @@ class _CurrencyConverterState extends State<CurrencyConverter> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    textEditingController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+
     final border = OutlineInputBorder(
       borderSide: const BorderSide(width: 2.0, style: BorderStyle.solid),
       borderRadius: BorderRadius.circular(5),
@@ -91,9 +143,9 @@ class _CurrencyConverterState extends State<CurrencyConverter> {
                 controller: textEditingController,
                 style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
-                  hintText: 'Enter amount in USD',
+                  hintText: 'Enter amount in $fromCurrency',
                   hintStyle: const TextStyle(color: Colors.black54),
-                  prefixIcon: const Icon(Icons.monetization_on_outlined),
+                  prefixIcon: Text(mapfunc(fromCurrency)),
                   filled: true,
                   fillColor: Colors.white,
                   focusedBorder: border,
